@@ -1,0 +1,120 @@
+@charset "utf-8";
+body{
+	background-image:url(images/mobile/tile.jpg);
+}
+#container{
+	width:100%;
+	min-width:0px;
+	box-sizing:borderbox;
+}
+header{
+	overflow:hidden;
+}
+header h1{
+	font-size:8.6vw;
+}
+header h2{
+	font-size:4.3vw;
+}
+header div#mobile{
+	display:none;
+}
+nav{
+	width:94%;
+	height:34px;
+	overflow:visible;
+	float:none;
+	margin-top:2%;
+	margin-bottom:2%;
+	position:relative;
+	font:Calibri, 'Asul', serif, "Times New Roman", Times;
+	z-index:2;
+}
+nav a{
+	position:absolute;
+	overflow:hidden;
+	width:100%;
+	height:inherit;
+	margin:0;
+	padding:0;
+	float:left;
+	text-align:left;
+	border:none;
+}
+nav a:last-child{
+	border-right:0;
+}
+nav a img{
+	display: inline;
+	margin-right:10px;
+	padding:5.4px;
+	height:calc(104% / 2 + 5.4px);
+	background-color:rgba(255, 255, 255, .4);
+}
+nav a span{
+	position:relative;
+	bottom:8px;
+	font-size: 24px;
+}
+icon img{
+	width:60%;
+	margin:20%;
+}
+div#main{
+	padding-left: 20px;
+	width:100%;
+	float:none;
+	margin:auto;
+}
+div#main img{
+	width:320px;
+	margin-top:15px;
+}
+div#main h3{
+	font-size:16px;	
+}
+div#main p{
+	margin:10px 2%;
+	font-size:14px;
+}
+
+div#thumbnails img, div#gallery div{
+	width:45.5%;
+}
+
+
+div#content form label{
+	margin-left: 0px;
+}
+div#content form input.type{
+	width:100%;
+	font-size:14px;
+}
+div#content form textarea{
+	width:100%;
+	font-size:14px;
+}
+div#content form div.g-recaptcha{
+	margin-left: 0px;
+	padding-left: 0px;
+}
+div#content form input#submit{
+	font-size:14px;
+	margin-left: 0px;
+}
+div#recaptcha_widget_div{
+	width:10%;
+}
+div#recaptcha_area{
+	width:10%;
+}
+div#errormessage{
+	width: 90%;
+	border-radius: 4px;
+}
+footer{
+	margin-top:8%	
+}
+footer h6{
+	font-size:.8em;
+}

@@ -1,0 +1,3 @@
+User-agent: *
+Disallow: /bot-trap/
+Disallow: /contact.php
