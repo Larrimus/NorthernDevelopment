@@ -1,4 +1,4 @@
-//"use strict";
+"use strict";
 var galleryDiv = document.getElementById('gallery');
 var galleryImageDivs = galleryDiv.children;
 
@@ -385,7 +385,7 @@ function loadAnimationTriggers(){
 						lastTick = Date.now();
 						/* If the user moved the image more down than to the side, triggering the first branch determined by: if (shiftUp > Math.abs(shiftRight)) in moveSlideClose(),
 							or the cursor was never moved, close image without worrying about any sliding. 
-							This works because the branch is question doesn't modify previousTime from its inital 0 value,
+							This works because the branch in question doesn't modify previousTime from its inital 0 value,
 							and not calling moveSlideClose() will also result in previousTime being left unmodified. */
 						if (!previousTime) {
 							if(onPointerMove) {
@@ -408,9 +408,7 @@ function loadAnimationTriggers(){
 						}
 						//If the image wasn't being moved when the user stopped touching the screen (onPointerMove hasn't been called in the last 50ms)
 						else if (lastTick - 50 > previousTime){
-							nextTickFactorRate = Math.log(Math.abs(deltaShiftRight) + 500) * 600 - 3600;
-							console.log("nextTickFactorRate: " + nextTickFactorRate + ", deltaShiftRight: " + deltaShiftRight);
-							console.log("\n");
+							nextTickFactorRate = Math.log(Math.abs(deltaShiftRight) + 500) * 600 - 4000;
 							//If nextImage & previousImage are off the screen & don't need to be moved
 							if ((deltaShiftRight < leftRightMargin) && (deltaShiftRight > -leftRightMargin)) {
 								galleryImages[previousImage].removeAttribute("style");
@@ -437,7 +435,7 @@ function loadAnimationTriggers(){
 									else if (imageWidthFactor != finalImageWidth) {
 										previousImage = imageWidthFactor;
 										imageWidthFactor = finalImageWidth;
-										finalImageWidth = previousTime;
+										finalImageWidth = previousImage;
 									}
 									/*tickSide() expects shiftRight to contain the shiftRight value for currentImage & deltaShiftRight to contain the shiftRight value for nextImage.
 									The shiftRight needs to be put into deltaShiftRight, and shiftRightFactor - leftRightMargin + deltaShiftRight into shiftRight. */
@@ -447,6 +445,9 @@ function loadAnimationTriggers(){
 									//tickSide() expects imageOpacity to contain the finalShiftRight value for currentImage & finalShiftRight to contain the finalShiftRight value for nextImage
 									finalShiftRight = (containerWidth - finalImageWidth) / 2 - imageDivMargin - (imageDivMargin + imageWidth) * (nextImage % imageColumns) + window.pageXOffset;
 									imageOpacity = finalShiftRight - (windowWidth + imageWidthFactor) / 2; //imageOpacity will be the finalShiftRight for currentImage
+									/*console.log("deltaShiftRight: " + deltaShiftRight);
+									console.log("currentFinalShiftRight: " + imageOpacity + ", windowWidth: " + windowWidth + ", imageOpacityFactor: " + imageOpacityFactor);
+									console.log("nextFinalShiftRight: " + finalShiftRight + ", containerWidth: " + containerWidth + ", finalImageWidth: " + finalImageWidth + ", imageDivMargin: " + imageDivMargin + ", (imageDivMargin + imageWidth): " + (imageDivMargin + imageWidth) + ", (nextImage % imageColumns): " + (nextImage % imageColumns) + ", pageXOffset: " + window.pageXOffset);*/
 								} else if (deltaShiftRight > 0) {
 									galleryImages[nextImage].removeAttribute("style");
 									nextImage = previousImage;
@@ -458,7 +459,7 @@ function loadAnimationTriggers(){
 										if (imageOpacityFactor != finalImageWidth) {
 											previousImage = imageOpacityFactor;
 											imageOpacityFactor = finalImageWidth;
-											finalImageWidth = previousTime;
+											finalImageWidth = previousImage;
 										}
 									}
 									previousImage = deltaShiftRight;
@@ -466,6 +467,9 @@ function loadAnimationTriggers(){
 									shiftRight = imageOpacity - leftRightMargin + previousImage;
 									finalShiftRight = (containerWidth - finalImageWidth) / 2 - imageDivMargin - (imageDivMargin + imageWidth) * (nextImage % imageColumns) + window.pageXOffset;
 									imageOpacity = finalShiftRight + (windowWidth + imageOpacityFactor) / 2;
+									/*console.log("deltaShiftRight: " + deltaShiftRight);
+									console.log("currentFinalShiftRight: " + imageOpacity + ", nextFinalShiftRight: " + finalShiftRight);
+									console.log("\n");*/
 								}
 								
 								if (deltaShiftRight) {
@@ -481,6 +485,9 @@ function loadAnimationTriggers(){
 						//If the image was being moved when the user stopped touching the screen (onPointerMove has been called in the last 50ms)
 						else {
 							nextTickFactorRate = 100 + 800 * (lastTick - previousTime) / Math.abs(shiftRight - previousShiftRight);
+							console.log("nextTickFactorRate: " + nextTickFactorRate + ", deltaShiftRight: " + deltaShiftRight);
+							console.log("lastTick: " + lastTick + ", previousTime: " + previousTime + ", shiftRight: " + shiftRight + ", previousShiftRight: " + previousShiftRight);
+							console.log("\n");
 							
 							//The value in previousImage will be used for the finalShiftRight for currentImage & nextImage so that it doesn't have to be recalculated
 							previousTime = containerWidth / 2 - imageDivMargin + window.pageXOffset;
@@ -680,117 +687,122 @@ function loadAnimationTriggers(){
 		}
 	};
 	
-	document.addEventListener('keydown', (event) => {
-		//performanceNow = performance.now();
+	//If this is a tablet or computer
+	//Don't do if this is a mobile device as such a device is very unlikely to have a keyboard & adding this event listener will only waste time
+	if (!(isMobile & 1)) {
+		//Add an event for Escape, ArrowRight, & ArrowLeft
+		document.addEventListener("keydown", function(event){
+			//performanceNow = performance.now();
 
-		if(currentImage > -1){
-			closeOtherFunctions(function() {
-				//If this isn't set early enough before calling tickSide() or tickOpenClose() the first nextTick will just be 0
-				lastTick = Date.now();
-				
-				//Close image
-				if (event.code === "Escape") {
-					closeImage();
-					//console.log("Esc Close Image Performance: " + (performance.now() - performanceNow));
-				}
-				//Move left to previous image
-				else if (event.code === "ArrowLeft") {
-					if(imageWidth >= finalImageWidth)
-						imageWidth = galleryImageDivs[0].clientWidth;
+			if(currentImage > -1){
+				closeOtherFunctions(function() {
+					//If this isn't set early enough before calling tickSide() or tickOpenClose() the first nextTick will just be 0
+					lastTick = Date.now();
 					
-					shiftUp = finalShiftRight; //shiftUp will be the shiftRight for currentImage
-					imageOpacity = shiftUp + (windowWidth + finalImageWidth) / 2; //imageOpacity will be the finalShiftRight for currentImage
-					
-					//If this is already the leftmost (previousmost) image
-					if(currentImage == 0)
-						nextImage = galleryImages.length - 1;
-					else
-						nextImage = currentImage - 1;
-					
-					imageRatio = galleryImages[nextImage].naturalHeight / galleryImages[nextImage].naturalWidth;
-					if(windowRatio < imageRatio)
-						finalImageWidth = windowHeight * 0.9 / imageRatio;
-					else
-						finalImageWidth = windowWidth * 0.9;
-					
-					shiftRight = (containerWidth - windowWidth) / 2 - imageDivMargin - (imageDivMargin + imageWidth) * (nextImage % imageColumns) - finalImageWidth + window.pageXOffset;
-					
-					finalShiftRight = (windowWidth + finalImageWidth) / 2 + shiftRight;
-					finalShiftUp = (windowHeight - finalImageWidth * imageRatio) / 2  - imageDivMargin - (imageDivMargin + imageWidth) * Math.floor(nextImage / imageColumns) - header.clientHeight - navBar.clientHeight + window.pageYOffset;
-					
-					/*console.log("currentImage: " + currentImage + ", nextImage: " + nextImage + ", imageColumns: " + imageColumns);
-					console.log("Current Image finalShiftRight: " + imageOpacity + ", Current Image shiftRight: " + shiftUp + ", finalShiftUp: " + finalShiftUp + ", windowHeight: " + windowHeight + ", imageDivMargin: " + imageDivMargin + ", Math.floor(nextImage / imageColumns): " + Math.floor(nextImage / imageColumns) + ", header.clientHeight: " + header.clientHeight + ", navBar.clientHeight: " + navBar.clientHeight + ", window.pageYOffset: " + window.pageYOffset);
-					console.log("Next Image finalShiftRight: " + finalShiftRight + ", Next Image shiftRight: " + shiftRight + ", containerWidth: " + containerWidth + ", imageDivMargin: " + imageDivMargin + ", imageWidth: " + imageWidth + ", (nextImage % imageColumns): " + (nextImage % imageColumns) + ", finalImageWidth: " + finalImageWidth + ", window.pageXOffset: " + window.pageXOffset);
-					console.log("\n");*/
-					
-					shiftRightFactor = finalShiftRight - shiftRight;
-					/*shiftUpFactor = imageOpacity - shiftUp;
-					
-					console.log("shiftRightFactor: " + shiftRightFactor + ", shiftUpFactor: " + shiftUpFactor);
-					console.log("\n");
-					console.log("\n");*/
-					
-					nextTickFactorRate = 200;
-					
-					if (documentBody.clientWidth <= windowWidth)
-						documentBody.style.overflowX = "hidden";
-					
-					galleryImages[nextImage].style.width = finalImageWidth;
-					galleryImages[nextImage].style.top = finalShiftUp;
-					galleryImages[nextImage].style.opacity = 1;
-					galleryImages[nextImage].style.zIndex = 3;
-					
-					/*galleryImages[nextImage].style.left = shiftRight;
-					galleryImages[currentImage].style.left = imageOpacity;*/
-					
-					isExecuting = true;
-					tickSide();
-					//console.log("Shift Image Left Performance: " + (performance.now() - performanceNow));
-				}
-				//Move right to next image
-				else if (event.code === "ArrowRight") {
-					if(imageWidth >= finalImageWidth)
-						imageWidth = galleryImageDivs[0].clientWidth;
-					
-					shiftUp = finalShiftRight; //shiftUp will be the shiftRight for currentImage
-					imageOpacity = shiftUp - (windowWidth + finalImageWidth) / 2; //imageOpacity will be the finalShiftRight for currentImage
-					
-					//If this is already the rightmost (nextmost) image
-					if(currentImage >= galleryImages.length - 1)
-						nextImage = 0;
-					else
-						nextImage = currentImage + 1;
-					
-					imageRatio = galleryImages[nextImage].naturalHeight / galleryImages[nextImage].naturalWidth;
-					if(windowRatio < imageRatio)
-						finalImageWidth = windowHeight * 0.9 / imageRatio;
-					else
-						finalImageWidth = windowWidth * 0.9;
-					
-					shiftRight = windowWidth - imageDivMargin - (imageDivMargin + imageWidth) * (nextImage % imageColumns) + window.pageXOffset;
-					
-					finalShiftRight = shiftRight - windowWidth - (finalImageWidth - containerWidth) / 2;
-					finalShiftUp = (windowHeight - finalImageWidth * imageRatio) / 2  - imageDivMargin - (imageDivMargin + imageWidth) * Math.floor(nextImage / imageColumns) - header.clientHeight - navBar.clientHeight + window.pageYOffset;
-					
-					shiftRightFactor = finalShiftRight - shiftRight;
-					
-					nextTickFactorRate = 200;
-					
-					if (documentBody.clientWidth <= windowWidth)
-						documentBody.style.overflowX = "hidden";
-					
-					galleryImages[nextImage].style.width = finalImageWidth;
-					galleryImages[nextImage].style.top = finalShiftUp;
-					galleryImages[nextImage].style.opacity = 1;
-					galleryImages[nextImage].style.zIndex = 3;
-					
-					isExecuting = true;
-					tickSide();					
-					//console.log("Shift Image Right Performance: " + (performance.now() - performanceNow));
-				}
-			});
-		}
-	});
+					//Close image
+					if (event.code === "Escape") {
+						closeImage();
+						//console.log("Esc Close Image Performance: " + (performance.now() - performanceNow));
+					}
+					//Move left to previous image
+					else if (event.code === "ArrowLeft") {
+						if(imageWidth >= finalImageWidth)
+							imageWidth = galleryImageDivs[0].clientWidth;
+						
+						shiftUp = finalShiftRight; //shiftUp will be the shiftRight for currentImage
+						imageOpacity = shiftUp + (windowWidth + finalImageWidth) / 2; //imageOpacity will be the finalShiftRight for currentImage
+						
+						//If this is already the leftmost (previousmost) image
+						if(currentImage == 0)
+							nextImage = galleryImages.length - 1;
+						else
+							nextImage = currentImage - 1;
+						
+						imageRatio = galleryImages[nextImage].naturalHeight / galleryImages[nextImage].naturalWidth;
+						if(windowRatio < imageRatio)
+							finalImageWidth = windowHeight * 0.9 / imageRatio;
+						else
+							finalImageWidth = windowWidth * 0.9;
+						
+						shiftRight = (containerWidth - windowWidth) / 2 - imageDivMargin - (imageDivMargin + imageWidth) * (nextImage % imageColumns) - finalImageWidth + window.pageXOffset;
+						
+						finalShiftRight = (windowWidth + finalImageWidth) / 2 + shiftRight;
+						finalShiftUp = (windowHeight - finalImageWidth * imageRatio) / 2  - imageDivMargin - (imageDivMargin + imageWidth) * Math.floor(nextImage / imageColumns) - header.clientHeight - navBar.clientHeight + window.pageYOffset;
+						
+						/*console.log("currentImage: " + currentImage + ", nextImage: " + nextImage + ", imageColumns: " + imageColumns);
+						console.log("Current Image finalShiftRight: " + imageOpacity + ", Current Image shiftRight: " + shiftUp + ", finalShiftUp: " + finalShiftUp + ", windowHeight: " + windowHeight + ", imageDivMargin: " + imageDivMargin + ", Math.floor(nextImage / imageColumns): " + Math.floor(nextImage / imageColumns) + ", header.clientHeight: " + header.clientHeight + ", navBar.clientHeight: " + navBar.clientHeight + ", window.pageYOffset: " + window.pageYOffset);
+						console.log("Next Image finalShiftRight: " + finalShiftRight + ", Next Image shiftRight: " + shiftRight + ", containerWidth: " + containerWidth + ", imageDivMargin: " + imageDivMargin + ", imageWidth: " + imageWidth + ", (nextImage % imageColumns): " + (nextImage % imageColumns) + ", finalImageWidth: " + finalImageWidth + ", window.pageXOffset: " + window.pageXOffset);
+						console.log("\n");*/
+						
+						shiftRightFactor = finalShiftRight - shiftRight;
+						/*shiftUpFactor = imageOpacity - shiftUp;
+						
+						console.log("shiftRightFactor: " + shiftRightFactor + ", shiftUpFactor: " + shiftUpFactor);
+						console.log("\n");
+						console.log("\n");*/
+						
+						nextTickFactorRate = 200;
+						
+						if (documentBody.clientWidth <= windowWidth)
+							documentBody.style.overflowX = "hidden";
+						
+						galleryImages[nextImage].style.width = finalImageWidth;
+						galleryImages[nextImage].style.top = finalShiftUp;
+						galleryImages[nextImage].style.opacity = 1;
+						galleryImages[nextImage].style.zIndex = 3;
+						
+						/*galleryImages[nextImage].style.left = shiftRight;
+						galleryImages[currentImage].style.left = imageOpacity;*/
+						
+						isExecuting = true;
+						tickSide();
+						//console.log("Shift Image Left Performance: " + (performance.now() - performanceNow));
+					}
+					//Move right to next image
+					else if (event.code === "ArrowRight") {
+						if(imageWidth >= finalImageWidth)
+							imageWidth = galleryImageDivs[0].clientWidth;
+						
+						shiftUp = finalShiftRight; //shiftUp will be the shiftRight for currentImage
+						imageOpacity = shiftUp - (windowWidth + finalImageWidth) / 2; //imageOpacity will be the finalShiftRight for currentImage
+						
+						//If this is already the rightmost (nextmost) image
+						if(currentImage >= galleryImages.length - 1)
+							nextImage = 0;
+						else
+							nextImage = currentImage + 1;
+						
+						imageRatio = galleryImages[nextImage].naturalHeight / galleryImages[nextImage].naturalWidth;
+						if(windowRatio < imageRatio)
+							finalImageWidth = windowHeight * 0.9 / imageRatio;
+						else
+							finalImageWidth = windowWidth * 0.9;
+						
+						shiftRight = windowWidth - imageDivMargin - (imageDivMargin + imageWidth) * (nextImage % imageColumns) + window.pageXOffset;
+						
+						finalShiftRight = shiftRight - windowWidth - (finalImageWidth - containerWidth) / 2;
+						finalShiftUp = (windowHeight - finalImageWidth * imageRatio) / 2  - imageDivMargin - (imageDivMargin + imageWidth) * Math.floor(nextImage / imageColumns) - header.clientHeight - navBar.clientHeight + window.pageYOffset;
+						
+						shiftRightFactor = finalShiftRight - shiftRight;
+						
+						nextTickFactorRate = 200;
+						
+						if (documentBody.clientWidth <= windowWidth)
+							documentBody.style.overflowX = "hidden";
+						
+						galleryImages[nextImage].style.width = finalImageWidth;
+						galleryImages[nextImage].style.top = finalShiftUp;
+						galleryImages[nextImage].style.opacity = 1;
+						galleryImages[nextImage].style.zIndex = 3;
+						
+						isExecuting = true;
+						tickSide();					
+						//console.log("Shift Image Right Performance: " + (performance.now() - performanceNow));
+					}
+				});
+			}
+		});
+	}
 	
 	document.addEventListener("scroll", function(event){
 		if(currentImage > -1){
