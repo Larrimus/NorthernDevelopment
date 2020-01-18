@@ -418,9 +418,9 @@ function loadAnimationTriggers(){
 								isExecuting = true;
 								tickSlideBack();
 							} else {
+								/* If deltaShiftRight is less than zero, that means nextImage will be the image sharing the screen with currentImage,
+									so previousImage can be forgotten about after it's CSS attributes applied by the JavaScript are removed. */
 								if (deltaShiftRight < 0) {
-									/* If deltaShiftRight is less than zero, that means nextImage will be the image sharing the screen with currentImage,
-										so previousImage can be forgotten about after it's CSS attributes applied by the JavaScript are removed. */
 									galleryImages[previousImage].removeAttribute("style");
 									/* If currentImage is offset enough that nextImage is more on the screen than currentImage, slide currentImage out for the nextImage image.
 										If the condition for this if statement is met, it means the opposite is true, and nextImage image will be slid out for currentImage. */
@@ -429,44 +429,57 @@ function loadAnimationTriggers(){
 										previousImage = nextImage;
 										nextImage = currentImage;
 										currentImage = previousImage;
+										/*tickSide() expects shiftRight to contain the shiftRight value for currentImage & shiftUp to contain the shiftRight value for nextImage.
+										shiftRight already contains the shiftRight value for currentImage, so shiftRightFactor + leftRightMargin + deltaShiftRight just needs to be put into shiftUp. */
+										shiftUp = shiftRightFactor + leftRightMargin + deltaShiftRight;
+										//console.log("shiftUp: " + shiftUp + ", shiftRightFactor: " + shiftRightFactor + ", leftRightMargin: " + leftRightMargin + ", previousImage: " + previousImage + ", deltaShiftRight: " + deltaShiftRight);
 									}
 									/*If imageWidthFactor and finalImageWidth are different, reverse them (using previousImage as a placeholder variable), otherwise, don't bother.
 									This ensures that finalImageWidth will be accurate for nextImage, even after it becomes currentImage. */
-									else if (imageWidthFactor != finalImageWidth) {
-										previousImage = imageWidthFactor;
-										imageWidthFactor = finalImageWidth;
-										finalImageWidth = previousImage;
+									else {
+										/*tickSide() expects shiftRight to contain the shiftRight value for currentImage & deltaShiftRight to contain the shiftRight value for nextImage.
+										The shiftRight needs to be put into deltaShiftRight, and shiftRightFactor - leftRightMargin + deltaShiftRight into shiftRight. */
+										previousImage = deltaShiftRight;
+										shiftUp = shiftRight;
+										shiftRight = shiftRightFactor + leftRightMargin + previousImage;
+										if (imageWidthFactor != finalImageWidth) {
+											previousImage = imageWidthFactor;
+											imageWidthFactor = finalImageWidth;
+											finalImageWidth = previousImage;
+										}
 									}
-									/*tickSide() expects shiftRight to contain the shiftRight value for currentImage & deltaShiftRight to contain the shiftRight value for nextImage.
-									The shiftRight needs to be put into deltaShiftRight, and shiftRightFactor - leftRightMargin + deltaShiftRight into shiftRight. */
-									previousImage = deltaShiftRight;
-									shiftUp = shiftRight;
-									shiftRight = shiftRightFactor + leftRightMargin + previousImage;
 									//tickSide() expects imageOpacity to contain the finalShiftRight value for currentImage & finalShiftRight to contain the finalShiftRight value for nextImage
 									finalShiftRight = (containerWidth - finalImageWidth) / 2 - imageDivMargin - (imageDivMargin + imageWidth) * (nextImage % imageColumns) + window.pageXOffset;
-									imageOpacity = finalShiftRight - (windowWidth + imageWidthFactor) / 2; //imageOpacity will be the finalShiftRight for currentImage
+									if (Math.abs(deltaShiftRight) < (containerWidth / 2))
+										imageOpacity = finalShiftRight + (windowWidth + imageWidthFactor) / 2; //imageOpacity will be the finalShiftRight for currentImage
+									else
+										imageOpacity = finalShiftRight - (windowWidth + imageWidthFactor) / 2;
 									/*console.log("deltaShiftRight: " + deltaShiftRight);
 									console.log("currentFinalShiftRight: " + imageOpacity + ", windowWidth: " + windowWidth + ", imageOpacityFactor: " + imageOpacityFactor);
 									console.log("nextFinalShiftRight: " + finalShiftRight + ", containerWidth: " + containerWidth + ", finalImageWidth: " + finalImageWidth + ", imageDivMargin: " + imageDivMargin + ", (imageDivMargin + imageWidth): " + (imageDivMargin + imageWidth) + ", (nextImage % imageColumns): " + (nextImage % imageColumns) + ", pageXOffset: " + window.pageXOffset);*/
 								} else if (deltaShiftRight > 0) {
 									galleryImages[nextImage].removeAttribute("style");
 									nextImage = previousImage;
-									if (Math.abs(deltaShiftRight) < (containerWidth / 2)) {
+									if (deltaShiftRight < (containerWidth / 2)) {
 										previousImage = currentImage;
 										currentImage = nextImage;
 										nextImage = previousImage;
+										shiftUp = imageOpacity - leftRightMargin + deltaShiftRight;
 									} else {
+										previousImage = deltaShiftRight;
+										shiftUp = shiftRight;
+										shiftRight = imageOpacity - leftRightMargin + previousImage;
 										if (imageOpacityFactor != finalImageWidth) {
 											previousImage = imageOpacityFactor;
 											imageOpacityFactor = finalImageWidth;
 											finalImageWidth = previousImage;
 										}
 									}
-									previousImage = deltaShiftRight;
-									shiftUp = shiftRight;
-									shiftRight = imageOpacity - leftRightMargin + previousImage;
 									finalShiftRight = (containerWidth - finalImageWidth) / 2 - imageDivMargin - (imageDivMargin + imageWidth) * (nextImage % imageColumns) + window.pageXOffset;
-									imageOpacity = finalShiftRight + (windowWidth + imageOpacityFactor) / 2;
+									if (deltaShiftRight < (containerWidth / 2))
+										imageOpacity = finalShiftRight - (windowWidth + imageOpacityFactor) / 2;
+									else
+										imageOpacity = finalShiftRight + (windowWidth + imageOpacityFactor) / 2;
 									/*console.log("deltaShiftRight: " + deltaShiftRight);
 									console.log("currentFinalShiftRight: " + imageOpacity + ", nextFinalShiftRight: " + finalShiftRight);
 									console.log("\n");*/
