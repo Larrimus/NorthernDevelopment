@@ -1,4 +1,6 @@
 <?php
+/*error_reporting(-1);
+ini_set('display_errors', 'On');
 /**
  * Mobile Detect Library
  * Motto: "Every business should have a mobile detection script to detect mobile readers"

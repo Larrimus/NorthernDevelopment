@@ -4,13 +4,16 @@ require_once "Mobile_Detect.php";
 $mobileDetect = new Mobile_Detect;
 $isMobile = 0;
 // Any tablet device.
-if($detect->isTablet())
+if($mobileDetect->isTablet()){
+	$isMobile ^= 1;
 	$isMobile <<= 1;
+}
 // Any mobile device (phones or tablets).
-if ($mobileDetect->isMobile())
-	$isMobile <<= 1;
-else
-	$isMobile <<= 0;
+if ($mobileDetect->isMobile()){
+	$isMobile ^= 1;
+}
+
+
 $badbot = 0;
 $useragent=$_SERVER['HTTP_USER_AGENT'];
 $proxy_headers = array(

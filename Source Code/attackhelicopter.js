@@ -31,7 +31,7 @@ loadAnimationTriggers();
 
 
 function loadAnimationTriggers(){
-	var performanceNow = performance.now();/*,
+	/*var performanceNow = performance.now();/*,
 		tickTime,
 		tickOpenCloseTime = 0,
 		tickSideTime = 0,
@@ -168,6 +168,7 @@ function loadAnimationTriggers(){
 		if (((shiftRightFactor < 0) && (shiftRight > finalShiftRight)) || ((shiftRightFactor > 0) && (shiftRight < finalShiftRight)))
 			animationFrameID = requestAnimationFrame(tickSlideBack);
 		else {//To prevent rounding errors from messing up the final position
+			documentBody.removeAttribute("style");
 			galleryImages[currentImage].style.left = finalShiftRight;
 			/*console.log("nextTick: " + nextTick + "; Next Image finalShiftRight: " + finalShiftRight + "; Current Image finalShiftRight: " + imageOpacity + ";");
 			console.log("tickSlideBack() Time: " + tickSlideBackTime);
@@ -181,6 +182,7 @@ function loadAnimationTriggers(){
 	var closeOtherFunctions = function(_callback){
 		if (isExecuting) {
 			cancelAnimationFrame(animationFrameID);
+			documentBody.removeAttribute("style");
 			//console.log("finalImageOpacity: " + finalImageOpacity + ", finalImageWidth: " + finalImageWidth + ", finalShiftRight: " + finalShiftRight);
 			if (finalImageOpacity){				
 				if(imageOpacity > -1 && imageOpacity < 2){
@@ -288,16 +290,25 @@ function loadAnimationTriggers(){
 						shiftUp = event.pageY - initialShiftUp;
 						
 						if (shiftUp > Math.abs(shiftRight)){
+							if (container.clientHeight <= windowHeight)
+								documentBody.style.overflowY = "hidden";
+							//While the users pointer is down, these variables will store the following values so they don't have to be recalculated in onPointerMove on each successive call
+							shiftUpFactor = 2 * initialShiftUp;
+							finalShiftRight = finalShiftRight - initialShiftRight; //(shiftRightFactor)
+							finalShiftUp = finalShiftUp - initialShiftUp;  //(shiftUpFactor)
 							onPointerMove = function(event) {
-								shiftRight = finalShiftRight + event.pageX - initialShiftRight;
-								shiftUp = finalShiftUp + event.pageY - initialShiftUp;
+								shiftRight = finalShiftRight + event.pageX;
+								shiftUp = finalShiftUp + event.pageY;
 								imageWidth = finalImageWidth - (Math.abs(event.pageY - initialShiftUp) + Math.abs(event.pageX - initialShiftRight) * windowRatio) / 2;
-								imageOpacity = (2 * initialShiftUp - event.pageY) / initialShiftUp;
+								imageOpacity = 1 - Math.abs(event.pageY / shiftUpFactor - 0.5);
 								galleryImages[currentImage].style.left = shiftRight;
 								galleryImages[currentImage].style.top = shiftUp;
 								galleryImages[currentImage].style.width = imageWidth;
 								galleryImages[currentImage].style.opacity = imageOpacity;
 								backgroundDiv.style.opacity = imageOpacity;
+								/*console.log("shiftRight: " + shiftRight + ", shiftUp: " + shiftUp + ", imageWidth: " + imageWidth + ", imageOpacity: " + imageOpacity);
+								console.log("pageX: " + event.pageX + ", pageY: " + event.pageY + ", initialShiftUp: " + initialShiftUp + ", initialShiftRight: " + initialShiftRight);
+								console.log("finalImageWidth: " + finalImageWidth + ", |pageY - initialShiftUp|: " + Math.abs(event.pageY - initialShiftUp) + ", |pageX - initialShiftRight|: " + Math.abs(event.pageX - initialShiftRight) + ", windowRatio: " + windowRatio);*/
 							};
 						} else {
 							imageWidth = galleryImageDivs[0].clientWidth;
@@ -424,7 +435,7 @@ function loadAnimationTriggers(){
 									galleryImages[previousImage].removeAttribute("style");
 									/* If currentImage is offset enough that nextImage is more on the screen than currentImage, slide currentImage out for the nextImage image.
 										If the condition for this if statement is met, it means the opposite is true, and nextImage image will be slid out for currentImage. */
-									if (Math.abs(deltaShiftRight) < (containerWidth / 2)) {
+									if ((deltaShiftRight * -1) < (containerWidth / 2)) {
 										//Set nextImage to currentImage, and currentImage to nextImage (using previousImage as a placeholder variable)
 										previousImage = nextImage;
 										nextImage = currentImage;
@@ -441,7 +452,7 @@ function loadAnimationTriggers(){
 										The shiftRight needs to be put into deltaShiftRight, and shiftRightFactor - leftRightMargin + deltaShiftRight into shiftRight. */
 										previousImage = deltaShiftRight;
 										shiftUp = shiftRight;
-										shiftRight = shiftRightFactor + leftRightMargin + previousImage;
+										shiftRight = shiftRightFactor + leftRightMargin - previousImage;
 										if (imageWidthFactor != finalImageWidth) {
 											previousImage = imageWidthFactor;
 											imageWidthFactor = finalImageWidth;
@@ -498,9 +509,9 @@ function loadAnimationTriggers(){
 						//If the image was being moved when the user stopped touching the screen (onPointerMove has been called in the last 50ms)
 						else {
 							nextTickFactorRate = 100 + 800 * (lastTick - previousTime) / Math.abs(shiftRight - previousShiftRight);
-							console.log("nextTickFactorRate: " + nextTickFactorRate + ", deltaShiftRight: " + deltaShiftRight);
+							/*console.log("nextTickFactorRate: " + nextTickFactorRate + ", deltaShiftRight: " + deltaShiftRight);
 							console.log("lastTick: " + lastTick + ", previousTime: " + previousTime + ", shiftRight: " + shiftRight + ", previousShiftRight: " + previousShiftRight);
-							console.log("\n");
+							console.log("\n");*/
 							
 							//The value in previousImage will be used for the finalShiftRight for currentImage & nextImage so that it doesn't have to be recalculated
 							previousTime = containerWidth / 2 - imageDivMargin + window.pageXOffset;
@@ -688,7 +699,7 @@ function loadAnimationTriggers(){
 		if (((shiftRightFactor < 0) && (shiftRight > finalShiftRight)) || ((shiftRightFactor > 0) && (shiftRight < finalShiftRight)))
 			animationFrameID = requestAnimationFrame(tickSide);
 		else {//To prevent rounding errors from messing up the final position
-			//documentBody.removeAttribute("style");
+			documentBody.removeAttribute("style");
 			galleryImages[currentImage].removeAttribute("style");
 			currentImage = nextImage;
 			galleryImages[currentImage].style.left = finalShiftRight;
@@ -860,8 +871,8 @@ function loadAnimationTriggers(){
 		}
 	});
 
-	console.log("loadAnimationTriggers() Performance: " + (performance.now() - performanceNow));
-	console.log("\n");
+	/*console.log("loadAnimationTriggers() Performance: " + (performance.now() - performanceNow));
+	console.log("\n");*/
 }
 
 
