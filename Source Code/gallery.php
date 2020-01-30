@@ -15,7 +15,6 @@ Cache-Control: public, max-age=2400000, must-revalidate>
 		<?php
         include("headdefaults.php");
         ?>
-		<script type="text/javascript" src="attackhelicopter.js" defer></script>
 		<style type="text/css">
 			div#container{
 				overflow:visible;
@@ -196,6 +195,8 @@ Cache-Control: public, max-age=2400000, must-revalidate>
 				$galleryImagesPosition+=2;
 			}
 			echo "\t\t\t</div><!--thumbnails-->\n";
+			
+			echo "\t\t\t<script type=\"text/javascript\" src=\"attackhelicopter.js\" async></script>\n";
 			
 			echo "\t\t\t<div id=\"gallery\">\n";
 			$galleryImages->rewind();
