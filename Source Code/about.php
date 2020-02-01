@@ -29,9 +29,7 @@ Cache-Control: public, max-age=2400000, must-revalidate>
 			<div id="main">
 				<h2>David Kling</h2>
                 <div id="first">
-					<p>Owner Northern Development Inc.<a href="images/"><img style="width:36%; min-height:100px; min-width:200px" src="images/" alt="Images" /></a>
-					&nbsp;&nbsp;&nbsp;<br>
-					&nbsp;&nbsp;&nbsp;</p>
+					<p>Owner Northern Development Inc.<a href="images/"><img style="width:36%; min-height:100px; min-width:200px" src="images/" alt="Images" /></a></p>
                 </div><!--first-->
 				
                 <!--footer-->	

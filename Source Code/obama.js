@@ -1,5 +1,6 @@
 "use strict";
-var documentBody = document.body;
+if(typeof documentBody === 'undefined')
+	var documentBody = document.body;
 
 /*Since the display attribute of 'block' is applied in a separate style.css document,
 and  the display attribute of 'none' is applied in a separate mobile.css document,
@@ -16,6 +17,7 @@ setFooterDate();
 /* Reorders the list relative to the page the user is on   */
 /**********************************************************/
 function orderList() {
+	/* This will return the name of the file on the end of the page URL, or an empty string if the URL doesn't have a filename on the end. */
 	var page = document.location.pathname.match(/[^\/]+$/)||[""][0];
 	var nav = href[0].parentNode;
 	var is404 = true;

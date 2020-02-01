@@ -13,36 +13,6 @@ Cache-Control: public, max-age=2400000, must-revalidate>
         include("headdefaults.php");
         ?>
 		<script type="text/javascript" src="shrek.js" defer></script>
-		<style type="text/css">
-			div#container{
-				overflow:hidden;
-			}
-			header{
-				overflow:hidden;
-			}
-			footer{
-				padding: 25px 0;
-			}
-			footer h6{
-				color: white;
-			}
-			footer a:link{
-				color: LightBlue;
-			}
-			footer a:visited{
-				color: MediumPurple;
-			}
-			@media handheld, screen and (max-device-width: 900px), (max-width: 320px), (-webkit-device-pixel-ratio: 1.5)
-			{
-				footer{
-					padding: 5% 0;
-					margin-top:0;
-				}
-				footer h6{
-					font-size:.6em;
-				}
-			}
-		</style>
 	</head>
 	<body>
 		<?php

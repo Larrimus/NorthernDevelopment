@@ -29,9 +29,7 @@ Cache-Control: public, max-age=2400000, must-revalidate>
 			<div id="main">
 				<h2>Skillsets</h2>
                 <div id="first">
-					<p>General contractor.
-					&nbsp;&nbsp;&nbsp;<br>
-					&nbsp;&nbsp;&nbsp;</p>
+					<p>General contractor.</p>
                 </div><!--first-->
 				
                 <!--footer-->	

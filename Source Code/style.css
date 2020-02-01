@@ -196,12 +196,12 @@ div#gallery img{
 }
 
 div#content form{
-	margin-left: 10px;
+	margin: 10px 0 0 10px;
 }
 div#content form label{
 	display:inline-block;
 	width:140px;
-	margin:0 20px 0 1%;
+	margin:0 20px 2px 1%;
 	vertical-align:top;
 }
 div#content form input.type{
@@ -232,7 +232,8 @@ div#content p.failed{
 div#errormessage{
 	margin: auto;
 	margin-bottom:2%;
-	width: 800px;
+	width: 90%;
+	max-width: 800px;
 	background: #d6ba65;
 	border: 1px solid black;
 	background-color :#ffafaf;
@@ -251,5 +252,22 @@ footer h6{
 	font-size:1em;
 	text-align: center;
 	vertical-align: top;
+/* The attributes from here until the first #main will only apply if the footer isn't in a main div. This is done because the main div makes gives the footer a background color that's fairly white whereas it will be fairly black otherwise. The colors of the text should be light with a black background (without #main), and dark with a white background (with #main)*/
+	color: white;
+}
+footer a:link{
+	color: LightBlue;
+}
+footer a:visited{
+	color: MediumPurple;
+}
+
+#main > footer h6{
 	color: black;
+}
+#main > footer a:link{
+	color: default;
+}
+#main > footer a:visited{
+	color: default;
 }

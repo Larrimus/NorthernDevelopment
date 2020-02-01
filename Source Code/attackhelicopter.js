@@ -1,4 +1,6 @@
 "use strict";
+if(typeof documentBody === 'undefined')
+	var documentBody = document.body;
 var galleryDiv = document.getElementById('gallery');
 var galleryImageDivs = galleryDiv.children;
 
@@ -902,7 +904,7 @@ function resizeDivs(){
 /***********************************************************************************************************************************/
 function grabStyle(){
 	var cssStyle = document.styleSheets;
-	var cssStyleLength = cssStyle.length - 1;
+	var cssStyleLength = cssStyle.length - 2;
 	
 	//Save references to the CSS in the HTML document for efficiency (sacrifice memory for CPU time)
 	var localCssStyle = cssStyle[cssStyleLength];

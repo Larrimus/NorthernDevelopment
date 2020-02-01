@@ -15,39 +15,6 @@ Cache-Control: public, max-age=2400000, must-revalidate>
 		<?php
         include("headdefaults.php");
         ?>
-		<style type="text/css">
-			div#container{
-				overflow:visible;
-			}
-			header{
-				overflow:hidden;
-			}
-			footer{
-				padding: 25px 0;
-			}
-			footer h6{
-				color: white;
-			}
-			footer a:link{
-				color: LightBlue;
-			}
-			footer a:visited{
-				color: MediumPurple;
-			}
-			@media handheld, screen and (max-device-width: 900px), (max-width: 320px), (-webkit-device-pixel-ratio: 1.5)
-			{
-				div#container{
-					overflow:hidden;
-				}
-				footer{
-					padding: 5% 0;
-					margin-top:0;
-				}
-				footer h6{
-					font-size:.6em;
-				}
-			}
-		</style>
 	</head>
 	<body>
 		<?php
