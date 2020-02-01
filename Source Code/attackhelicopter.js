@@ -918,6 +918,8 @@ function grabStyle(){
 	var documentName;
 	var documentNameItterator;
 	
+	var styleTokens = new Array ("#thumbnails img", ",", "#gallery div");
+	
 	//Loop through the documents
 	for (var documentsItterator = 0; documentsItterator < cssStyleLength; documentsItterator++){
 		//Save the document link & its length to local strings for increased traversal speed
@@ -935,7 +937,7 @@ function grabStyle(){
 			//Check if the name of this document matches any that we're looking for
 			if (isMobile & 1) {
 				if ("style.css" == documentName)
-					columnMarginStyle = findStyleAttribute(cssStyle[documentsItterator].cssRules, "div#thumbnails img, div#gallery div");
+					columnMarginStyle = findStyleAttribute(cssStyle[documentsItterator].cssRules, styleTokens);
 				else if ("mobile.css" == documentName)
 					//To be able to check that documentNameItterator is false instead of needing to waste cycles checking that isMobile is true, & that "mobile.css" == documentName again
 					documentNameItterator = 0;
@@ -955,7 +957,7 @@ function grabStyle(){
 		columnWidthStyle = columnMarginStyle;
 	else {
 		//Find the attribute that controls the width of each image in the document
-		columnWidthStyle = findStyleAttribute(cssStyle, "div#thumbnails img, div#gallery div");
+		columnWidthStyle = findStyleAttribute(cssStyle[cssStyleLength].cssRules, styleTokens);
 		columnMarginStyle = columnWidthStyle;
 	}
 }
@@ -965,11 +967,19 @@ function grabStyle(){
 /*******************************************************************************************/
 function findStyleAttribute(cssStyle, styleSelectorText) {
 	var cssStyleLength = cssStyle.length;
-	//console.log("cssStyleLength: " + cssStyleLength);
+	var textLength = styleSelectorText.length;
+	/*console.log(cssStyle);
+	console.log("cssStyleLength: " + cssStyleLength);*/
 	for (var documentItterator = 0; documentItterator < cssStyleLength; documentItterator++){
-		if (cssStyle[documentItterator].selectorText == styleSelectorText){
-			//Return the reference to that document
-			return cssStyle[documentItterator].style;
+		//console.log(cssStyle[documentItterator].selectorText);
+		for (var textItterator = 0; textItterator < textLength; textItterator++){
+			if (cssStyle[documentItterator].selectorText.indexOf(styleSelectorText[textItterator]) == -1){
+				textItterator = textLength;
+			}
+			else if (textItterator == (textLength - 1)){
+				//Return the reference to that document
+				return cssStyle[documentItterator].style;
+			}
 		}
 	}
 	return false;

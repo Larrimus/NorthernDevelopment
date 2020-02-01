@@ -45,7 +45,7 @@ function orderList() {
 				imgAtr = document.createElement("IMG"),
 				spanAtr = document.createElement("SPAN"),
 				spanText = document.createTextNode("Navigation");
-			//imgAtr.src = "images/404-icon.png";
+			imgAtr.src = "images/404-icon.png";
 			spanAtr.appendChild(spanText);
 			hrefLink.appendChild(imgAtr);
 			hrefLink.appendChild(spanAtr);
