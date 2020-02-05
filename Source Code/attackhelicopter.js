@@ -975,7 +975,7 @@ function findStyleAttribute(cssStyle, styleSelectorText) {
 		for (var textItterator = 0; textItterator < textLength; textItterator++){
 			if (cssStyle[documentItterator].selectorText.indexOf(styleSelectorText[textItterator]) == -1){
 				textItterator = textLength;
-			}
+			} //If the text has all of the tokens in it
 			else if (textItterator == (textLength - 1)){
 				//Return the reference to that document
 				return cssStyle[documentItterator].style;
