@@ -878,77 +878,107 @@ function loadAnimationTriggers(){
 }
 
 
-/****************************************************************/
-/* Resize the divs in galleryDiv & adjust the number of columns */
-/****************************************************************/
+/****************************************************************************************************************************************/
+/* Resize the divs in galleryDiv (the divs that surround the thumbnails and hidden images in the gallery) & adjust the number of columns*/
+/****************************************************************************************************************************************/
 function resizeDivs(){
-	imageColumns = Math.ceil(container.clientWidth / 220);
-	columnMargin = 440 / ((imageColumns + 10)*(imageColumns + 10));
-	columnMarginStyle.marginTop = columnMargin + "%";
-	columnMarginStyle.marginLeft = columnMargin + "%";
-	columnWidthStyle.width = (100 - (imageColumns + 1) * columnMargin) / imageColumns + "%";
-	/*console.log("imageColumns: " + imageColumns + ", columnWidthStyle.marginLeft: " + columnWidthStyle.marginLeft + ", columnMarginStyle: " + columnMarginStyle);
-	console.log("columnWidthStyle.width: " + columnWidthStyle.width + ", (100 - (imageColumns + 1) * columnMarginStyle) / imageColumns: " + (100 - (imageColumns + 1) * columnMarginStyle) / imageColumns);
-	console.log(columnWidthStyle.marginLeft);
-	console.log(columnWidthStyle);*/
-	
-	galleryDivsStyle.height = galleryImageDivs[0].clientWidth;
-	
-	windowHeight = backgroundDiv.clientHeight;
-	//Changing the height of all the divs changes the body width & not its height for some reason
-	windowWidth = backgroundDiv.clientWidth;
+	/* Have approximately one column for every 220 pixels in the width of the column.
+	And save this to a temporary local variable so we don't have to make the computation and the expensive HTML call more than once. */
+	var tempImageColumns = Math.ceil(container.clientWidth / 220);
+	//console.log("imageColumns: ", imageColumns, ", tempImageColumns: ", tempImageColumns, ", imageColumns != tempImageColumns: ", imageColumns != tempImageColumns);
+	//Unless the number of columns has been changed, don't bother running the computations below or making expensive changes to the CSS
+	if(imageColumns != tempImageColumns){
+		imageColumns = tempImageColumns
+		/* Scale the margins of each column and row to 440/(imageColumns+10)^2.
+		This equation will cause the margins for each column and row to always be approximately 20px. */
+		columnMargin = 440 / ((imageColumns + 10)*(imageColumns + 10));
+		/* The fact that these are percentages causes this function to not have to be called if the number of columns does not change */
+		columnMarginStyle.marginTop = columnMargin + "%";
+		columnMarginStyle.marginLeft = columnMargin + "%";
+		//Scale the actual images contained within those columns themselves
+		columnWidthStyle.width = (100 - (imageColumns + 1) * columnMargin) / imageColumns + "%";
+		/*console.log("imageColumns: " + imageColumns + ", columnWidthStyle.marginLeft: " + columnWidthStyle.marginLeft + ", columnMarginStyle: " + columnMarginStyle);
+		console.log("columnWidthStyle.width: " + columnWidthStyle.width + ", (100 - (imageColumns + 1) * columnMarginStyle) / imageColumns: " + (100 - (imageColumns + 1) * columnMarginStyle) / imageColumns);
+		console.log(columnWidthStyle.marginLeft);
+		console.log(columnWidthStyle);*/
+		
+		galleryDivsStyle.height = galleryImageDivs[0].clientWidth;
+		
+		windowHeight = backgroundDiv.clientHeight;
+		//Changing the height of all the divs changes the body width & not its height for some reason
+		windowWidth = backgroundDiv.clientWidth;
+	}
 }
 
 /***********************************************************************************************************************************/
 /* Get the style attribute "div#thumbnails img, div#gallery div" from the appropriate CSS file & the column spacing from style.css */
 /***********************************************************************************************************************************/
 function grabStyle(){
+	//Will allow us to itterate over all the pages stylesheets faster by doing it from a local variable (sacrifice memory for CPU time)
 	var cssStyle = document.styleSheets;
-	var cssStyleLength = cssStyle.length - 2;
 	
-	//Save references to the CSS in the HTML document for efficiency (sacrifice memory for CPU time)
-	var localCssStyle = cssStyle[cssStyleLength];
-	var localCssStyleLength = localCssStyle.cssRules.length;
-	
-	localCssStyle.insertRule("div#gallery div{\n\n}", localCssStyleLength);
-	galleryDivsStyle = localCssStyle.cssRules[localCssStyleLength].style;
-	
-	//console.log("cssStyleLength: " + cssStyleLength);
-	
+	//Will hold the href of each stylesheet we itterate through cssStyle (which will be concatenated down to the name of that CSS file if it's from one of our CSS files)
 	var documentName;
+	//If documentName is not null, this will help us itterate back to the first '/' in documentName in order to extract the name of that stylesheet
 	var documentNameItterator;
 	
+	//Will hold the cssStyle for documents in which documentName ends up matching "style.css" or "mobile.css"
+	var localCssStyle;
+	//Will hold the number of rules in localCssStyle
+	var localCssStyleLength;
+	
+	/* Used in findStyleAttribute(cssStyle, styleSelectorText) to find the attribute that controls the width of each image in the document.
+	Not hard coding the values in this array into findStyleAttribute(cssStyle, styleSelectorText),
+	so it only needs passed one variable makes it a bit slower, but far more flexible. */
 	var styleTokens = new Array ("#thumbnails img", ",", "#gallery div");
 	
 	//Loop through the documents
-	for (var documentsItterator = 0; documentsItterator < cssStyleLength; documentsItterator++){
+	for (var documentsItterator = cssStyle.length - 2; documentsItterator > 0; documentsItterator--){
 		//Save the document link & its length to local strings for increased traversal speed
 		documentName = cssStyle[documentsItterator].href;
-		documentNameItterator = documentName.length - 1;
-		//Reverse search through the link to find the last '/' character (to cut off that character & every character before it)
-		while (documentName[documentNameItterator] != "/" && documentNameItterator)
-			documentNameItterator--;
-		//If the file name has no '/' character, it obviously won't match, so don't waste cycles checking
-		if (documentNameItterator){
-			documentNameItterator++;
-			//Cut off the URL part leaving only the name of each file
-			documentName = documentName.substr(documentNameItterator);
-			
-			//Check if the name of this document matches any that we're looking for
-			if (isMobile & 1) {
-				if ("style.css" == documentName)
-					columnMarginStyle = findStyleAttribute(cssStyle[documentsItterator].cssRules, styleTokens);
+		
+		//Make sure to avoid errors in the case that the document link is null
+		if(documentName){
+			documentNameItterator = documentName.length - 1;
+			//Reverse search through the link to find the last '/' character (to cut off that character & every character before it)
+			while (documentName[documentNameItterator] != "/" && documentNameItterator)
+				documentNameItterator--;
+			//If the file name has no '/' character, it obviously won't match, so don't waste cycles checking
+			if (documentNameItterator){
+				documentNameItterator++;
+				//Cut off the URL part leaving only the name of each file
+				documentName = documentName.substr(documentNameItterator);
+				
+				//Check if the name of this document matches any that we're looking for
+				if ("style.css" == documentName){
+					//Save references to the CSS in the HTML document for efficiency (sacrifice memory for CPU time)
+					localCssStyle = cssStyle[documentsItterator];
+					var localCssStyleRules = localCssStyle.cssRules;
+					localCssStyleLength = localCssStyleRules.length;
+					
+					/* This rule needs to be pointed to by the global variable galleryDivsStyle, after being added to "style.css" to allow resizeDivs()
+					to properly resize the divs and images in galleryDiv, as well as to adjust the number of columns */
+					localCssStyle.insertRule("div#gallery div{\n\n}", localCssStyleLength);
+					galleryDivsStyle = localCssStyleRules[localCssStyleLength].style;
+					
+					if (isMobile & 1)
+						columnMarginStyle = findStyleAttribute(cssStyle[documentsItterator].cssRules, styleTokens);
+					else
+						//To be able to check that documentNameItterator is false instead of needing to waste cycles checking that isMobile is false, & that "style.css" == documentName again
+						documentNameItterator = 0;
+				}
 				else if ("mobile.css" == documentName)
-					//To be able to check that documentNameItterator is false instead of needing to waste cycles checking that isMobile is true, & that "mobile.css" == documentName again
-					documentNameItterator = 0;
-			} else if ("style.css" == documentName)
-				//To be able to check that documentNameItterator is false instead of needing to waste cycles checking that isMobile is true, & that "mobile.css" == documentName again
-				documentNameItterator = 0;
-			if (!documentNameItterator){
-				//Save the reference to that document
-				cssStyle = cssStyle[documentsItterator].cssRules;
-				//Break from the for loop
-				documentsItterator = cssStyleLength;
+					if (isMobile & 1)
+						//To be able to check that documentNameItterator is false instead of needing to waste cycles checking that isMobile is true, & that "mobile.css" == documentName again
+						documentNameItterator = 0;
+				
+				// if (((isMobile & 1) && ("mobile.css" == documentName)) || (!(isMobile & 1) && ("style.css" == documentName)))
+				if (!documentNameItterator){
+					//Save the reference to that document
+					cssStyle = localCssStyle.cssRules;
+					//Break from the for loop
+					documentsItterator = 0;
+				}
 			}
 		}
 	}
@@ -957,7 +987,7 @@ function grabStyle(){
 		columnWidthStyle = columnMarginStyle;
 	else {
 		//Find the attribute that controls the width of each image in the document
-		columnWidthStyle = findStyleAttribute(cssStyle[cssStyleLength].cssRules, styleTokens);
+		columnWidthStyle = findStyleAttribute(cssStyle, styleTokens);
 		columnMarginStyle = columnWidthStyle;
 	}
 }

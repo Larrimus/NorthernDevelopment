@@ -30,7 +30,7 @@ Cache-Control: public, max-age=2400000, must-revalidate>
 				<h2>David Kling</h2>
                 <div id="first">
 					<p>Owner Northern Development Inc.</p>
-					<p>David has worked as a general contractor, offering exceptional service for many years. Our goal at Northern Development is to satisfy our customers by extending affordable, high quality and professional services for your next project. Our main goal is to provide an excellent customer experience. If David can't complete your project, there's a good chance we can find someone who will.</p>
+					<p>David has worked as a general contractor, offering exceptional service for many years. Our goal at Northern Development is to satisfy our customers by extending affordable, high quality and professional services for your next project. Our main goal is to provide an excellent customer experience. If we can't complete your project, there's a good chance we can find someone who will.</p>
                 </div><!--first-->
 				
                 <!--footer-->	
