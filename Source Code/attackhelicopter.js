@@ -901,13 +901,13 @@ function resizeDivs(){
 		console.log("columnWidthStyle.width: " + columnWidthStyle.width + ", (100 - (imageColumns + 1) * columnMarginStyle) / imageColumns: " + (100 - (imageColumns + 1) * columnMarginStyle) / imageColumns);
 		console.log(columnWidthStyle.marginLeft);
 		console.log(columnWidthStyle);*/
-		
-		galleryDivsStyle.height = galleryImageDivs[0].clientWidth;
-		
-		windowHeight = backgroundDiv.clientHeight;
-		//Changing the height of all the divs changes the body width & not its height for some reason
-		windowWidth = backgroundDiv.clientWidth;
 	}
+		
+	galleryDivsStyle.height = galleryImageDivs[0].clientWidth;
+	
+	windowHeight = backgroundDiv.clientHeight;
+	//Changing the height of all the divs changes the body width & not its height for some reason
+	windowWidth = backgroundDiv.clientWidth;
 }
 
 /***********************************************************************************************************************************/
