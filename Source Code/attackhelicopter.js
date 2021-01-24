@@ -916,6 +916,7 @@ function resizeDivs(){
 function grabStyle(){
 	//Will allow us to itterate over all the pages stylesheets faster by doing it from a local variable (sacrifice memory for CPU time)
 	var cssStyle = document.styleSheets;
+	var cssStyleLength = cssStyle.length - 1;
 	
 	//Will hold the href of each stylesheet we itterate through cssStyle (which will be concatenated down to the name of that CSS file if it's from one of our CSS files)
 	var documentName;
@@ -933,21 +934,24 @@ function grabStyle(){
 	var styleTokens = new Array ("#thumbnails img", ",", "#gallery div");
 	
 	//Loop through the documents
-	for (var documentsItterator = cssStyle.length - 2; documentsItterator > 0; documentsItterator--){
+	for (var documentsItterator = 1; documentsItterator < cssStyleLength; documentsItterator++){
 		//Save the document link & its length to local strings for increased traversal speed
 		documentName = cssStyle[documentsItterator].href;
 		
 		//Make sure to avoid errors in the case that the document link is null
 		if(documentName){
+			//console.log("href: ", documentName);
 			documentNameItterator = documentName.length - 1;
 			//Reverse search through the link to find the last '/' character (to cut off that character & every character before it)
 			while (documentName[documentNameItterator] != "/" && documentNameItterator)
 				documentNameItterator--;
+			
 			//If the file name has no '/' character, it obviously won't match, so don't waste cycles checking
 			if (documentNameItterator){
 				documentNameItterator++;
 				//Cut off the URL part leaving only the name of each file
 				documentName = documentName.substr(documentNameItterator);
+				//console.log("documentName: ", documentName);
 				
 				//Check if the name of this document matches any that we're looking for
 				if ("style.css" == documentName){
